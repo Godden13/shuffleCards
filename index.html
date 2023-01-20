@@ -1,0 +1,163 @@
+<body>
+  <div id="root"></div>
+  <img src="" alt="" />
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@16.12.0/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16.12.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.8.3/babel.js"></script>
+  <script src="https://unpkg.com/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js"></script>
+  <script src="./context/theme.context.js"></script>
+
+  <style>
+    #image {
+      display: flex;
+      height: 40vh;
+      width: 300px;
+    }
+
+    .imageCards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-items: center;
+      align-items: center;
+      gap: 1rem;
+      padding-bottom: 3rem;
+      width: 90%;
+      margin: auto;
+    }
+
+    .card {
+      border-radius: 8px;
+      width: 300px;
+      height: 60vh;
+      display: flex;
+      font-size: 13px;
+      flex-direction: column;
+      align-items: flex-start;
+      border-radius: 5px 5px 0 0;
+      border: 2px solid #e1e1e1;
+    }
+
+    .text {
+      min-height: 100px;
+      margin: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+  </style>
+
+  <script type="text/babel">
+    const imageList = [
+      {
+        src: "./assets/image1.png",
+        title: "Akagera National Park",
+        text: "Visitors to Akagera National Park can take part in a range of activities, including game drives, boat safaris, bird watching, and nature walks.",
+      },
+
+      {
+        src: "./assets/image2.png",
+        title: "Bisoke Hike",
+        text: "The Bisoke hike is a popular mountain trek in Rwanda, located in the Volcanoes National Park. It is one of the most challenging hikes in the park.",
+      },
+
+      {
+        src: "./assets/image3.png",
+        title: "Lake Kivu trip",
+        text: "A trip to Lake Kivu can be a truly unique and memorable experience.",
+      },
+      {
+        src: "./assets/imge3.png",
+        title: "Akagera National Park",
+        text: "Visitors to Akagera National Park can take part in a range of activities, including game drives, boat safaris, bird watching, and nature walks.",
+      },
+
+      {
+        src: "./assets/8.png",
+        title: "Bisoke Hike",
+        text: "The Bisoke hike is a popular mountain trek in Rwanda, located in the Volcanoes National Park. It is one of the most challenging hikes in the park.",
+      },
+    ];
+
+    function randomize(cards) {
+      const newCards = [...cards].sort((a, b) => 0.5 - Math.random());
+      return newCards;
+    }
+
+    function Cards({ src, title, text, handleClickParam }) {
+      const [theme, setTheme] = useTheme();
+      const tiltRef = React.useRef(null);
+      React.useEffect(() => {
+        const tiltNode = tiltRef.current;
+        console.log(tiltNode);
+        const vanillaTiltOptions = {
+          max: 25,
+          speed: 400,
+          glare: true,
+          "max-glare": 0.5,
+        };
+        VanillaTilt.init(tiltNode, vanillaTiltOptions);
+        return () => {
+          tiltNode.vanillaTilt.destroy();
+        };
+      }, []);
+
+      return (
+        <div
+          ref={tiltRef}
+          style={{
+            color: theme.color,
+            backgroundColor: theme.backgroundColor,
+          }}
+          className="card"
+          key={src}
+          onClick={handleClickParam}
+        >
+          <img src={src} alt={title} id="image" />
+          <div className="text">
+            <h2>{title}</h2>
+            <p> {text} </p>
+          </div>
+
+          <button
+            onClick={() => {
+              setTheme((prevTheme) =>
+                prevTheme === "light" ? "dark" : "light"
+              );
+            }}
+          >
+            click
+          </button>
+        </div>
+      );
+    }
+
+    function GenerateImage() {
+      const [cards, setCards] = React.useState(imageList);
+      const [theme, setTheme] = React.useState("dark");
+
+      function handleClick() {
+        const newCards = randomize(cards);
+        setCards(newCards);
+      }
+
+      return (
+        <ThemeProvider value={[themeObject[theme], setTheme]}>
+          <div className="imageCards">
+            {cards.map((image) => {
+              return (
+                <Cards
+                  {...image}
+                  handleClickParam={handleClick}
+                  key={image.src}
+                />
+              );
+            })}
+          </div>
+        </ThemeProvider>
+      );
+    }
+
+    ReactDOM.render(<GenerateImage />, document.getElementById("root"));
+  </script>
+</body>
